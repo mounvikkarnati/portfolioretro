@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initScrollAnimations();
     initNavHighlighting();
+    initProjectHover();
 
     // Mobile menu toggle
     function initMenuToggle() {
@@ -149,21 +150,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize scroll animations
-    function initScrollAnimations() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
+    
+    // Update initScrollAnimations function
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Add staggered delay based on index
+                setTimeout(() => {
                     entry.target.classList.add('animate');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        // Observe all animated cards
-        document.querySelectorAll('.animated-card').forEach(el => {
-            observer.observe(el);
+                }, index * 150); // 150ms delay between each card
+            }
         });
-    }
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animated-card').forEach(el => {
+        observer.observe(el);
+    });
+}
 
     // Navigation highlighting based on scroll position
     function initNavHighlighting() {
@@ -404,4 +408,30 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('mouseleave', stopMouseTrail);
 document.addEventListener('mouseenter', startMouseTrail);
 });
+// Add scroll to top for logo
+document.getElementById('logoHome').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
 
+// Add this to enhance project hover interactions
+function initProjectHover() {
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+            this.style.transform = 'scale(1.05)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+            this.style.transform = 'scale(1)';
+        });
+    });
+}
+
+;
