@@ -172,35 +172,6 @@ body {
     mix-blend-mode: overlay;
 }
 
-/* Audio Toggle */
-.audio-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
-    font-family: 'VT323', monospace;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    text-shadow: var(--text-glow);
-    backdrop-filter: blur(10px);
-}
-
-.audio-toggle:hover {
-    background: var(--neon-cyan);
-    color: var(--dark-bg);
-    box-shadow: var(--box-glow) var(--neon-cyan);
-}
-
-.audio-text {
-    margin-left: 8px;
-}
-
 /* Header */
 .vapor-header {
     position: fixed;
@@ -274,7 +245,7 @@ body {
     text-transform: uppercase;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link.active {
     color: var(--neon-pink);
     text-shadow: var(--text-glow);
 }
@@ -291,29 +262,8 @@ body {
     box-shadow: var(--text-glow);
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after, .nav-link.active::after {
     width: 100%;
-}
-
-.theme-toggle {
-    background: none;
-    border: 2px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-}
-
-.theme-toggle:hover {
-    background: var(--neon-cyan);
-    color: var(--dark-bg);
-    box-shadow: var(--box-glow) var(--neon-cyan);
 }
 
 .menu-toggle {
@@ -753,7 +703,6 @@ section {
 
 .skill-progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
     border-radius: 4px;
     width: 0;
     transition: width 1.5s ease-in-out;
@@ -774,6 +723,31 @@ section {
 @keyframes shimmer {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
+}
+
+/* Color variations for skill bars */
+.skill-progress[data-skill="95"] {
+    background: linear-gradient(90deg, #ff00ff, #9d00ff);
+}
+
+.skill-progress[data-skill="90"] {
+    background: linear-gradient(90deg, #ff00ff, #ff6b6b);
+}
+
+.skill-progress[data-skill="85"] {
+    background: linear-gradient(90deg, #ff00ff, #ffd93d);
+}
+
+.skill-progress[data-skill="80"] {
+    background: linear-gradient(90deg, #00ffff, #0099ff);
+}
+
+.skill-progress[data-skill="75"] {
+    background: linear-gradient(90deg, #00ffff, #9d00ff);
+}
+
+.skill-progress[data-skill="70"] {
+    background: linear-gradient(90deg, #ff6b6b, #ffd93d);
 }
 
 /* Experience Section */
@@ -1215,6 +1189,18 @@ section {
     }
 }
 
+/* Scroll Animations */
+.animated-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.animated-card.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
     .hero-content {
@@ -1256,10 +1242,6 @@ section {
 
 @media (max-width: 768px) {
     .vapor-nav {
-        display: none;
-    }
-    
-    .theme-toggle {
         display: none;
     }
     
@@ -1338,8 +1320,7 @@ section {
         gap: 15px;
     }
 }
-
-/* Add this to your existing CSS */
+/* ===== PARTICLE AND MOUSE TRAIL STYLES ===== */
 .particle {
     position: fixed;
     pointer-events: none;
@@ -1376,54 +1357,11 @@ section {
     }
     100% {
         opacity: 0;
-        transform: scale(3);
+        transform: scale(1.5);
     }
 }
 
-/* Ensure particles don't interfere with other elements */
 .particle, .mouse-trail {
     mix-blend-mode: screen;
 }
 
-/* Add to your existing CSS */
-
-.skill-progress::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-/* Optional: Add percentage text display */
-.skill-bar {
-    position: relative;
-}
-
-.skill-bar::after {
-    content: attr(data-skill)'%';
-    position: absolute;
-    right: -40px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--neon-cyan);
-    font-family: 'VT323', monospace;
-    font-size: 1rem;
-    min-width: 30px;
-}
-.skill-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
-    border-radius: 4px;
-    width: 0; /* MUST start at 0 */
-    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth animation */
-    position: relative;
-}

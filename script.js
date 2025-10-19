@@ -1,14 +1,5 @@
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Audio functionality
-    const audioToggle = document.getElementById('audioToggle');
-    const audioElement = document.getElementById('synthwaveAudio');
-    const audioText = document.querySelector('.audio-text');
-    let audioEnabled = false;
-
-    // Theme toggle
-    const themeToggle = document.getElementById('themeToggle');
-
     // Menu toggle for mobile
     const menuToggle = document.getElementById('menuToggle');
     const vaporNav = document.querySelector('.vapor-nav');
@@ -20,16 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const terminalCursor = document.querySelector('.terminal-cursor');
 
     // Initialize functions
-    initAudio();
-    initThemeToggle();
     initMenuToggle();
     initSkillBars();
     initTerminal();
     initSmoothScroll();
     initContactForm();
-    initAnimations();
-
-    
+    initScrollAnimations();
+    initNavHighlighting();
 
     // Mobile menu toggle
     function initMenuToggle() {
@@ -161,22 +149,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize animations
-    function initAnimations() {
-        // Add fade-in animation to elements when they come into view
+    // Initialize scroll animations
+    function initScrollAnimations() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.animation = `fadeInUp 0.6s ease forwards`;
-                    entry.target.style.opacity = '1';
+                    entry.target.classList.add('animate');
                 }
             });
         }, { threshold: 0.1 });
 
-        // Observe all sections and cards
-        document.querySelectorAll('section, .project-card, .research-card, .skills-category, .timeline-item').forEach(el => {
-            el.style.opacity = '0';
+        // Observe all animated cards
+        document.querySelectorAll('.animated-card').forEach(el => {
             observer.observe(el);
+        });
+    }
+
+    // Navigation highlighting based on scroll position
+    function initNavHighlighting() {
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
         });
     }
 
@@ -282,103 +292,54 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 50);
         }
     }, 5000);
+    // ===== MOUSE TRAIL EFFECT =====
+let mouseX = 0;
+let mouseY = 0;
+let trailInterval;
 
-    // Add interactive cursor effects
-    document.addEventListener('mousemove', function(e) {
-        if (Math.random() < 0.3) { // 30% chance to create cursor effect
-            const cursorGlow = document.createElement('div');
-            cursorGlow.style.cssText = `
-                position: fixed;
-                width: 20px;
-                height: 20px;
-                background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9999;
-                left: ${e.clientX - 10}px;
-                top: ${e.clientY - 10}px;
-                opacity: 0.7;
-                animation: fadeOut 1s forwards;
-            `;
-            
-            document.body.appendChild(cursorGlow);
-            
-            setTimeout(() => {
-                cursorGlow.remove();
-            }, 1000);
-        }
-    });
-
-    // Add CSS for cursor glow animation
-    const cursorStyles = document.createElement('style');
-    cursorStyles.textContent = `
-        @keyframes fadeOut {
-            to { opacity: 0; transform: scale(2); }
-        }
-        
-        .theme-cyber {
-            /* Cyber theme styles would go here */
-        }
-    `;
-    document.head.appendChild(cursorStyles);
-
-    // Add particle effect on click
-    document.addEventListener('click', function(e) {
-        createParticles(e.clientX, e.clientY);
-    });
-
-    function createParticles(x, y) {
-        const colors = ['var(--neon-pink)', 'var(--neon-cyan)', 'var(--neon-purple)', 'var(--neon-blue)'];
-        
-        for (let i = 0; i < 8; i++) {
-            const particle = document.createElement('div');
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            particle.style.cssText = `
-                position: fixed;
-                width: 4px;
-                height: 4px;
-                background: ${color};
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9998;
-                left: ${x}px;
-                top: ${y}px;
-                opacity: 0.8;
-            `;
-            
-            document.body.appendChild(particle);
-            
-            // Animate particle
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 2 + Math.random() * 3;
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed;
-            
-            let posX = x;
-            let posY = y;
-            let opacity = 0.8;
-            
-            function animate() {
-                posX += vx;
-                posY += vy;
-                opacity -= 0.02;
-                
-                particle.style.left = posX + 'px';
-                particle.style.top = posY + 'px';
-                particle.style.opacity = opacity;
-                
-                if (opacity > 0) {
-                    requestAnimationFrame(animate);
-                } else {
-                    particle.remove();
-                }
-            }
-            
-            animate();
-        }
-    }
+document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
 });
+
+function createMouseTrail() {
+    const trail = document.createElement('div');
+    trail.className = 'mouse-trail';
+    
+    // Random size between 6px and 12px
+    const size = Math.random() * 6 + 6;
+    trail.style.width = `${size}px`;
+    trail.style.height = `${size}px`;
+    
+    // Random color with neon glow
+    const colors = ['var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-purple)'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    trail.style.background = color;
+    trail.style.boxShadow = `0 0 15px ${color}, 0 0 30px ${color}`;
+    
+    // Position at current mouse position
+    trail.style.left = `${mouseX - size / 2}px`;
+    trail.style.top = `${mouseY - size / 2}px`;
+    
+    document.body.appendChild(trail);
+    
+    // Remove trail after animation completes
+    setTimeout(() => {
+        if (trail.parentNode) {
+            trail.parentNode.removeChild(trail);
+        }
+    }, 800);
+}
+
+// Start mouse trail effect
+function startMouseTrail() {
+    trailInterval = setInterval(createMouseTrail, 50);
+}
+
+// Stop mouse trail effect
+function stopMouseTrail() {
+    clearInterval(trailInterval);
+}
 
 // ===== PARTICLE EFFECTS ON CLICK =====
 document.addEventListener('click', function(e) {
@@ -434,55 +395,6 @@ function createParticles(x, y) {
     }
 }
 
-// ===== MOUSE TRAIL EFFECT =====
-let mouseX = 0;
-let mouseY = 0;
-let trailInterval;
-
-document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-function createMouseTrail() {
-    const trail = document.createElement('div');
-    trail.className = 'mouse-trail';
-    
-    // Random size between 6px and 12px
-    const size = Math.random() * 6 + 6;
-    trail.style.width = `${size}px`;
-    trail.style.height = `${size}px`;
-    
-    // Random color with neon glow
-    const colors = ['var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-purple)'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    trail.style.background = color;
-    trail.style.boxShadow = `0 0 15px ${color}, 0 0 30px ${color}`;
-    
-    // Position at current mouse position
-    trail.style.left = `${mouseX - size / 2}px`;
-    trail.style.top = `${mouseY - size / 2}px`;
-    
-    document.body.appendChild(trail);
-    
-    // Remove trail after animation completes
-    setTimeout(() => {
-        if (trail.parentNode) {
-            trail.parentNode.removeChild(trail);
-        }
-    }, 800);
-}
-
-// Start mouse trail effect
-function startMouseTrail() {
-    trailInterval = setInterval(createMouseTrail, 50); // Create trail every 50ms
-}
-
-// Stop mouse trail effect
-function stopMouseTrail() {
-    clearInterval(trailInterval);
-}
-
 // Initialize mouse trail when page loads
 document.addEventListener('DOMContentLoaded', function() {
     startMouseTrail();
@@ -491,138 +403,5 @@ document.addEventListener('DOMContentLoaded', function() {
 // Optional: Pause trail when mouse leaves window
 document.addEventListener('mouseleave', stopMouseTrail);
 document.addEventListener('mouseenter', startMouseTrail);
-
-// ===== ENHANCED PARTICLE ANIMATIONS =====
-// Update the existing particle CSS for better performance
-const style = document.createElement('style');
-style.textContent = `
-    .particle {
-        position: fixed;
-        pointer-events: none;
-        z-index: 9998;
-        border-radius: 50%;
-        animation: particleFloat 1.5s ease-out forwards;
-        will-change: transform, opacity;
-    }
-
-    @keyframes particleFloat {
-        0% {
-            opacity: 1;
-            transform: translate(0, 0) scale(1) rotate(0deg);
-        }
-        100% {
-            opacity: 0;
-            transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg);
-        }
-    }
-
-    .mouse-trail {
-        position: fixed;
-        pointer-events: none;
-        z-index: 9997;
-        border-radius: 50%;
-        animation: trailFade 0.8s ease-out forwards;
-        will-change: transform, opacity;
-    }
-
-    @keyframes trailFade {
-        0% {
-            opacity: 0.6;
-            transform: scale(1);
-        }
-        100% {
-            opacity: 0;
-            transform: scale(1.5);
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// ===== PERFORMANCE OPTIMIZATION =====
-// Throttle mouse trail for better performance
-let lastTrailTime = 0;
-const trailThrottle = 30; // milliseconds
-
-function throttledMouseTrail() {
-    const now = Date.now();
-    if (now - lastTrailTime >= trailThrottle) {
-        createMouseTrail();
-        lastTrailTime = now;
-    }
-}
-
-// Update the trail creation to use throttled version
-function startOptimizedMouseTrail() {
-    trailInterval = setInterval(throttledMouseTrail, trailThrottle);
-}
-
-// Replace the original start function with optimized version
-document.removeEventListener('DOMContentLoaded', startMouseTrail);
-document.addEventListener('DOMContentLoaded', startOptimizedMouseTrail);
-
-// ===== COLOR PALETTE INTEGRATION =====
-// Ensure particles use current color palette
-function updateParticleColors() {
-    // This will automatically use CSS variables from the current palette
-    console.log('Particle colors updated to current palette');
-}
-
-// Listen for palette changes (if you have palette switching functionality)
-document.addEventListener('paletteChange', updateParticleColors);
-
-
-
-// Initialize toggle button
-document.addEventListener('DOMContentLoaded', addEffectsToggle);
-
-// ===== SKILL PROGRESS BARS ANIMATION =====
-function animateSkillBars() {
-    const skillBars = document.querySelectorAll('.skill-progress');
-    console.log('Animating skill bars:', skillBars.length); // Debug
-    
-    skillBars.forEach((bar, index) => {
-        const percentage = bar.getAttribute('data-skill');
-        console.log(`Bar ${index}: ${percentage}%`); // Debug
-        
-        // Reset to 0 first
-        bar.style.width = '0%';
-        
-        // Animate with staggered delay
-        setTimeout(() => {
-            bar.style.width = `${percentage}%`;
-        }, index * 100); // Stagger animation
-    });
-}
-
-// ===== INTERSECTION OBSERVER =====
-function setupSkillBarObserver() {
-    const skillsSection = document.querySelector('.skills-section');
-    console.log('Skills section found:', skillsSection); // Debug
-    
-    if (skillsSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                console.log('Intersection observed:', entry.isIntersecting); // Debug
-                if (entry.isIntersecting) {
-                    animateSkillBars();
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { 
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        });
-        
-        observer.observe(skillsSection);
-    }
-}
-
-// ===== INITIALIZE =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Page loaded - setting up skill bars'); // Debug
-    setupSkillBarObserver();
 });
 
-// ===== MANUAL TRIGGER (for testing) =====
-// You can call this in browser console to test: window.animateSkillBars()
-window.animateSkillBars = animateSkillBars;
